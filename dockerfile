@@ -1,5 +1,5 @@
 ### BASE
-FROM almalinux:9.3-minimal
+FROM almalinux:9.4-minimal
     #https://repo.almalinux.org/almalinux/9/isos/x86_64/
 
 ### ENV
@@ -13,6 +13,10 @@ ENV DOCKERCLI_VERSION=1:25.0.3-1.el9
 ENV KUBECTL_VERSION=v1.29.1
     #https://dl.k8s.io/release/stable.txt
     #https://github.com/kubernetes/kubectl/tags
+ENV AWSCLI_VERSION=2.17.49
+    #https://github.com/aws/aws-cli
+ENV SAM_VERSION=v1.123.0
+    #https://github.com/aws/aws-sam-cli
 ENV ECSCLI_VERSION=v1.21.0
     #https://github.com/aws/amazon-ecs-cli
 ENV EKSCTL_VESION=v0.171.0
@@ -61,7 +65,7 @@ RUN yum-config-manager --add-repo https://download.docker.com/linux/centos/docke
     microdnf clean all
 
 ### cloud
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWSCLI_VERSION}.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
     ./aws/install && \
     rm awscliv2.zip && \
@@ -72,6 +76,18 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2
     tar -xzf eksctl_Linux_${BUILDARCH}.tar.gz -C /tmp && \
     rm eksctl_Linux_${BUILDARCH}.tar.gz &&\
     mv /tmp/eksctl /usr/local/bin
+
+### Cloudformation tools
+
+RUN pip install cfn-lint pydot yq && \
+curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/aws-cloudformation/cloudformation-guard/main/install-guard.sh | sh && \
+export PATH=~/.guard/bin:$PATH && \
+cfn-guard --version
+
+RUN wget https://github.com/aws/aws-sam-cli/releases/download/${SAM_VERSION}/aws-sam-cli-linux-x86_64.zip && \
+unzip aws-sam-cli-linux-x86_64.zip -d sam-installation && \
+sudo ./sam-installation/install && \
+sam --version
 
 #rootlessコンテナ toshikazuでの実行
 RUN /usr/sbin/useradd devuser && \
