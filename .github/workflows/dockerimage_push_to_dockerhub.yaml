@@ -25,10 +25,7 @@ jobs:
         with:
           images: becchi78/iac_devcontainer
           tags: |
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-            type=sha
+            type=ref,event=tag
           labels: |
             org.opencontainers.image.title=infrastructure_devcontainer
             org.opencontainers.image.vendor="becchi78"
