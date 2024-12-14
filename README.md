@@ -29,6 +29,7 @@ Terraform/Ansible/Docker/Kubernetes/CloudFormation の開発を主目的とす�
 - unzip
 - nettool 系
 - git
+- tree
 
 #### 言語系
 
