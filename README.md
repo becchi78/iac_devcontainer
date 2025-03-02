@@ -29,6 +29,7 @@ Terraform/Ansible/Docker/Kubernetes/CloudFormation の開発を主目的とす�
 - unzip
 - nettool 系
 - git
+- tree
 
 #### 言語系
 
@@ -116,7 +117,15 @@ GUI で現在のコンテナを削除する。Volume は削除されません。
 tar xvf /work/devuser_home.tar -C ~/
 ```
 
+## Tag の更新
+
+```sh
+git tag v1.1
+git push origin v1.1
+```
+
 ## 更新履歴
 
+- v1.2 2025/03/02 vi と diff を追加
 - v1.1 2024/09/17 CloudFormation のツールを追加,base を almalinux:9.4-minimal に変更
 - v1.0 2024/02/14 初版作成

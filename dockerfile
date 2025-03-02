@@ -27,8 +27,8 @@ ARG BUILDARCH
 
 ### tools
 RUN microdnf update -y && \
-    microdnf install -y epel-release yum-utils wget sudo which tar zip unzip gzip bind-utils iputils pip git && \
-    rm -rf /var/cahce/yum/* && \
+    microdnf install -y epel-release yum-utils wget sudo which tar zip unzip gzip bind-utils iputils pip git tree && \
+    rm -rf /var/cache/yum/* && \
     microdnf clean all
 
 #### TimeZone & LANG
