@@ -126,6 +126,7 @@ git push origin v1.1
 
 ## 更新履歴
 
-- v1.2 2025/03/02 vi と diff を追加
+- v1.3 2025/03/02 vi と diff を追加
+- v1.2 2025/03/02 tree を追加
 - v1.1 2024/09/17 CloudFormation のツールを追加,base を almalinux:9.4-minimal に変更
 - v1.0 2024/02/14 初版作成
