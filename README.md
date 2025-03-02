@@ -117,6 +117,13 @@ GUI で現在のコンテナを削除する。Volume は削除されません。
 tar xvf /work/devuser_home.tar -C ~/
 ```
 
+## Tag の更新
+
+```sh
+git tag v1.1
+git push origin v1.1
+```
+
 ## 更新履歴
 
 - v1.2 2025/03/02 vi と diff を追加
