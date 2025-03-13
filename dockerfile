@@ -49,7 +49,7 @@ RUN curl -OL https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terra
 
 ### Ansible
 RUN python -m pip install ansible==${ANSIBLE_VERSION} && \
-    /bin/rm -rf /usr/local/lib/python3.9/site-packages/ansible_collections/fortinet 
+    /bin/rm -rf /usr/local/lib/python3.9/site-packages/ansible_collections/fortinet
 
 ### Docker/Kubernetes
 RUN yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo && \
@@ -88,6 +88,11 @@ RUN wget https://github.com/aws/aws-sam-cli/releases/download/${SAM_VERSION}/aws
 unzip aws-sam-cli-linux-x86_64.zip -d sam-installation && \
 sudo ./sam-installation/install && \
 sam --version
+
+### act
+RUN curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash && \
+mv bin/act /usr/local/bin/act && \
+act --version
 
 #rootlessコンテナ toshikazuでの実行
 RUN /usr/sbin/useradd devuser && \

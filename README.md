@@ -60,6 +60,10 @@ Terraform/Ansible/Docker/Kubernetes/CloudFormation の開発を主目的とす�
 - cfn-guard
 - sam
 
+#### Github Actions
+
+- act
+
 ### base イメージとツールのバージョン
 
 以下のツールについては互換性の観点からバージョンの固定を行っている。
@@ -90,7 +94,7 @@ Volume を作成してからコンテナを作成する。
 ```bash
 podman volume create iac-devcontainer-volume
 
-podman create --name iac-devcontainer -v iac-devcontainer-volume:/work -v /var/run/docker.sock:/var/run/docker.sock iac_devcontainer:v1.1
+podman create --name iac-devcontainer -v iac-devcontainer-volume:/work -v /run/podman/podman.sock:/var/run/docker.sock docker.sock iac-devcontainer:v1.1
 ```
 
 GUI からコンテナを起動させる。
@@ -126,6 +130,7 @@ git push origin v1.1
 
 ## 更新履歴
 
+- v1.4 2025/03/14 act-cli を追加
 - v1.3 2025/03/02 vi と diff を追加
 - v1.2 2025/03/02 tree を追加
 - v1.1 2024/09/17 CloudFormation のツールを追加,base を almalinux:9.4-minimal に変更
