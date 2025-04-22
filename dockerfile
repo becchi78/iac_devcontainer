@@ -26,8 +26,8 @@ ENV TERRAFORM_VERSION=1.7.4 \
     LC_ALL="ja_JP.UTF-8" \
     TZ="Asia/Tokyo"
 
- ### ARG
- ARG BUILDARCH
+### ARG
+ARG BUILDARCH
 
 ### tools
 RUN microdnf update -y && \
