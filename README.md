@@ -86,7 +86,7 @@ Terraform/Ansible/Docker/Kubernetes/CloudFormation の開発を主目的とす�
 
 ```bash
 cd [Dockerfileがあるフォルダ]
-podman build ./ -t iac-devcontainer:v1.1
+podman
 ```
 
 Volume を作成してからコンテナを作成する。
@@ -94,7 +94,7 @@ Volume を作成してからコンテナを作成する。
 ```bash
 podman volume create iac-devcontainer-volume
 
-podman create --name iac-devcontainer -v iac-devcontainer-volume:/work -v /run/podman/podman.sock:/var/run/docker.sock docker.sock iac-devcontainer:v1.1
+podman create --name iac-devcontainer -v iac-devcontainer-volume:/work -v /run/podman/podman.sock:/var/run/docker.sock docker.sock iac-devcontainer:v1.5
 ```
 
 GUI からコンテナを起動させる。
@@ -104,6 +104,17 @@ GUI からコンテナを起動させる。
 VSCode の拡張機能「Dev Container」を導入する。
 
 画面左下の「<>」をクリックして「Attach to Running Container」を選択して、bih-infra-devcontainer に接続する。
+
+## コンテナデプロイ後の追加手順
+
+以下のコマンドを実行して SAM CLI をインストールしてください。arm64 の場合は x86_64 を arm64 に変更すること。
+
+```bash
+wget https://github.com/aws/aws-sam-cli/releases/download/v1.123.0/aws-sam-cli-linux-x86_64.zip
+unzip aws-sam-cli-linux-x86_64.zip -d sam-installation
+sudo ./sam-installation/install
+sam --version
+```
 
 ## コンテナの更新
 
@@ -130,6 +141,7 @@ git push origin v1.1
 
 ## 更新履歴
 
+- v1.5 2025/04/13 リファクタリング
 - v1.4 2025/03/14 act-cli を追加
 - v1.3 2025/03/02 vi と diff を追加
 - v1.2 2025/03/02 tree を追加
