@@ -1,57 +1,54 @@
 ### BASE
-FROM almalinux:9.4-minimal
+FROM almalinux:9.5-minimal
     #https://repo.almalinux.org/almalinux/9/isos/x86_64/
 
 ### ENV
-ENV TERRAFORM_VERSION=1.7.4
+ENV TERRAFORM_VERSION=1.7.4 \
     #https://releases.hashicorp.com/terraform/
-ENV ANSIBLE_VERSION=8.7.0
+    ANSIBLE_VERSION=8.7.0 \
     #ansible core 2.15
     #https://docs.ansible.com/ansible/latest/roadmap/ansible_roadmap_index.html
-ENV DOCKERCLI_VERSION=1:25.0.3-1.el9
+    DOCKERCLI_VERSION=1:25.0.3-1.el9 \
     #https://download.docker.com/linux/centos/9/x86_64/stable/Packages/
-ENV KUBECTL_VERSION=v1.29.1
+    KUBECTL_VERSION=v1.29.1 \
     #https://dl.k8s.io/release/stable.txt
     #https://github.com/kubernetes/kubectl/tags
-ENV AWSCLI_VERSION=2.17.49
+    AWSCLI_VERSION=2.17.49 \
     #https://github.com/aws/aws-cli
-ENV SAM_VERSION=v1.123.0
+    SAM_VERSION=v1.123.0 \
     #https://github.com/aws/aws-sam-cli
-ENV ECSCLI_VERSION=v1.21.0
+    ECSCLI_VERSION=v1.21.0 \
     #https://github.com/aws/amazon-ecs-cli
-ENV EKSCTL_VESION=v0.171.0
+    EKSCTL_VESION=v0.171.0 \
     #https://github.com/eksctl-io/eksctl
-
-### ARG
-ARG BUILDARCH
-
-### tools
-RUN microdnf update -y && \
-    microdnf install -y epel-release yum-utils wget sudo which tar zip unzip gzip bind-utils iputils pip git tree vi diffutils && \
-    rm -rf /var/cache/yum/* && \
-    microdnf clean all
-
-#### TimeZone & LANG
-RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && \
-    microdnf install -y glibc-locale-source && \
-    localedef -f UTF-8 -i ja_JP ja_JP.UTF-8 && \
-    rm -rf /var/cahce/yum/* && \
-    microdnf clean all
-ENV LANG="ja_JP.UTF-8" \
+    LANG="ja_JP.UTF-8" \
     LANGUAGE="ja_JP:ja" \
     LC_ALL="ja_JP.UTF-8" \
     TZ="Asia/Tokyo"
 
+### tools
+RUN microdnf update -y && \
+    microdnf install -y epel-release yum-utils wget sudo which tar zip unzip gzip bind-utils iputils pip git jq tree vi diffutils glibc-locale-source && \
+    microdnf clean all && \
+    rm -rf /var/cache/yum/* && \
+    rm -rf /tmp/*
+
+### TimeZone & LANG
+RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && \
+    localedef -f UTF-8 -i ja_JP ja_JP.UTF-8
+
 ### Terraform
 RUN curl -OL https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_${BUILDARCH}.zip && \
     unzip terraform_${TERRAFORM_VERSION}_linux_${BUILDARCH}.zip -d /usr/local/bin && \
-    rm terraform_${TERRAFORM_VERSION}_linux_${BUILDARCH}.zip
+    rm terraform_${TERRAFORM_VERSION}_linux_${BUILDARCH}.zip && \
+    curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash && \
+    tflint --version
 
 ### Ansible
 RUN python -m pip install ansible==${ANSIBLE_VERSION} && \
     /bin/rm -rf /usr/local/lib/python3.9/site-packages/ansible_collections/fortinet
 
-### Docker/Kubernetes
+### Docker & Kubernetes
 RUN yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo && \
     microdnf -y install dnf-plugins-core docker-ce-cli-${DOCKERCLI_VERSION} && \
     curl -LO https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${BUILDARCH}/kubectl && \
@@ -61,8 +58,9 @@ RUN yum-config-manager --add-repo https://download.docker.com/linux/centos/docke
     chmod 700 get_helm.sh && \
     ./get_helm.sh && \
     rm ./get_helm.sh && \
-    rm -rf /var/cahce/yum/* && \
-    microdnf clean all
+    microdnf clean all && \
+    rm -rf /var/cache/yum/* && \
+    rm -rf /tmp/*
 
 ### cloud
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWSCLI_VERSION}.zip" -o "awscliv2.zip" && \
@@ -79,15 +77,10 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWSCLI_VERSION}
 
 ### Cloudformation tools
 
-RUN pip install cfn-lint pydot yq && \
+RUN pip install cfn-lint yq && \
 curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/aws-cloudformation/cloudformation-guard/main/install-guard.sh | sh && \
 export PATH=~/.guard/bin:$PATH && \
 cfn-guard --version
-
-RUN wget https://github.com/aws/aws-sam-cli/releases/download/${SAM_VERSION}/aws-sam-cli-linux-x86_64.zip && \
-unzip aws-sam-cli-linux-x86_64.zip -d sam-installation && \
-sudo ./sam-installation/install && \
-sam --version
 
 ### act
 RUN curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash && \
