@@ -26,9 +26,6 @@ ENV TERRAFORM_VERSION=1.7.4 \
     LC_ALL="ja_JP.UTF-8" \
     TZ="Asia/Tokyo"
 
-    ### ARG
-ARG BUILDARCH
-
 ### tools
 RUN microdnf update -y && \
     microdnf install -y epel-release yum-utils wget sudo which tar zip unzip gzip bind-utils iputils pip git jq tree vi diffutils glibc-locale-source && \

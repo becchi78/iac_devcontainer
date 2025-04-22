@@ -39,6 +39,7 @@ Terraform/Ansible/Docker/Kubernetes/CloudFormation の開発を主目的とす�
 #### IaC
 
 - Terraform
+- tflint
 - ansible
 
 #### コンテナ
@@ -86,7 +87,7 @@ Terraform/Ansible/Docker/Kubernetes/CloudFormation の開発を主目的とす�
 
 ```bash
 cd [Dockerfileがあるフォルダ]
-podman
+podman build ./ -t iac-devcontainer:v1.5
 ```
 
 Volume を作成してからコンテナを作成する。
