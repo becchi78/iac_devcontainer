@@ -111,10 +111,7 @@ VSCode の拡張機能「Dev Container」を導入する。
 以下のコマンドを実行して SAM CLI をインストールしてください。arm64 の場合は x86_64 を arm64 に変更すること。
 
 ```bash
-wget https://github.com/aws/aws-sam-cli/releases/download/v1.123.0/aws-sam-cli-linux-x86_64.zip
-unzip aws-sam-cli-linux-x86_64.zip -d sam-installation
-sudo ./sam-installation/install
-sam --version
+
 ```
 
 ## コンテナの更新

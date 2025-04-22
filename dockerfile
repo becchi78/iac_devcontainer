@@ -26,6 +26,9 @@ ENV TERRAFORM_VERSION=1.7.4 \
     LC_ALL="ja_JP.UTF-8" \
     TZ="Asia/Tokyo"
 
+ ### ARG
+ ARG BUILDARCH
+
 ### tools
 RUN microdnf update -y && \
     microdnf install -y epel-release yum-utils wget sudo which tar zip unzip gzip bind-utils iputils pip git jq tree vi diffutils glibc-locale-source && \
@@ -81,6 +84,14 @@ RUN pip install cfn-lint yq && \
 curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/aws-cloudformation/cloudformation-guard/main/install-guard.sh | sh && \
 export PATH=~/.guard/bin:$PATH && \
 cfn-guard --version
+
+### SAM CLI
+
+RUN wget https://github.com/aws/aws-sam-cli/releases/download/v1.123.0/aws-sam-cli-linux-${BUILDARCH}.zip && \
+    unzip aws-sam-cli-linux-${BUILDARCH}.zip -d sam-installation && \
+    sudo ./sam-installation/install && \
+    rm -rf aws-sam-cli-linux-${BUILDARCH}.zip sam-installation && \
+    sam --version
 
 ### act
 RUN curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash && \
