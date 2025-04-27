@@ -86,6 +86,7 @@ Terraform/Ansible/Docker/Kubernetes/CloudFormation の開発を主目的とす�
 コマンドを実行してコンテナイメージをビルドする。
 
 ### podman
+
 ```bash
 cd [Dockerfileがあるフォルダ]
 podman build ./ -t iac-devcontainer:v1.5
@@ -96,10 +97,11 @@ docker build --build-arg BUILDARCH=arm64 --build-arg AWSCLIARCH=aarch64 --build-
 ```
 
 アーキテクチャによる引数の値は以下の通り
+
 | Architecture | BUILDARCH | AWSCLIARCH | SAMCLIARCH |
-|--------------|-----------|------------|------------|
-| Intel       | amd64    | x86_64     | x86_64     |
-| Apple      | arm64   | aarch64    | arm64    |
+| ------------ | --------- | ---------- | ---------- |
+| Intel        | amd64     | x86_64     | x86_64     |
+| Apple        | arm64     | aarch64    | arm64      |
 
 Volume を作成してからコンテナを作成する。
 
