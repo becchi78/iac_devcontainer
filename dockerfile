@@ -19,15 +19,13 @@ ENV TERRAFORM_VERSION=1.7.4 \
     #https://github.com/aws/aws-sam-cli
     ECSCLI_VERSION=v1.21.0 \
     #https://github.com/aws/amazon-ecs-cli
-    EKSCTL_VESION=v0.171.0 \
+    EKSCTL_VERSION=v0.171.0
     #https://github.com/eksctl-io/eksctl
-    LANG="ja_JP.UTF-8" \
-    LANGUAGE="ja_JP:ja" \
-    LC_ALL="ja_JP.UTF-8" \
-    TZ="Asia/Tokyo"
 
 ### ARG
 ARG BUILDARCH
+ARG AWSCLIARCH
+ARG SAMCLIARCH
 
 ### tools
 RUN microdnf update -y && \
@@ -65,32 +63,30 @@ RUN yum-config-manager --add-repo https://download.docker.com/linux/centos/docke
     rm -rf /var/cache/yum/* && \
     rm -rf /tmp/*
 
-### cloud
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWSCLI_VERSION}.zip" -o "awscliv2.zip" && \
+### AWS
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-${AWSCLIARCH}-${AWSCLI_VERSION}.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
     ./aws/install && \
     rm awscliv2.zip && \
     rm -rf ./aws && \
     sudo curl -Lo /usr/local/bin/ecs-cli https://amazon-ecs-cli.s3.amazonaws.com/ecs-cli-linux-amd64-${ECSCLI_VERSION} && \
     sudo chmod +x /usr/local/bin/ecs-cli && \
-    curl -sLO "https://github.com/weaveworks/eksctl/releases/download/${EKSCTL_VESION}/eksctl_Linux_${BUILDARCH}.tar.gz" && \
+    curl -sLO "https://github.com/weaveworks/eksctl/releases/download/${EKSCTL_VERSION}/eksctl_Linux_${BUILDARCH}.tar.gz" && \
     tar -xzf eksctl_Linux_${BUILDARCH}.tar.gz -C /tmp && \
     rm eksctl_Linux_${BUILDARCH}.tar.gz &&\
     mv /tmp/eksctl /usr/local/bin
 
 ### Cloudformation tools
-
 RUN pip install cfn-lint yq && \
 curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/aws-cloudformation/cloudformation-guard/main/install-guard.sh | sh && \
-export PATH=~/.guard/bin:$PATH && \
+cp /root/.guard/3/cfn-guard-v3-*-ubuntu-latest/cfn-guard /usr/local/bin/cfn-guard && \
 cfn-guard --version
 
 ### SAM CLI
-
-RUN wget https://github.com/aws/aws-sam-cli/releases/download/v1.123.0/aws-sam-cli-linux-${BUILDARCH}.zip && \
-    unzip aws-sam-cli-linux-${BUILDARCH}.zip -d sam-installation && \
+RUN wget https://github.com/aws/aws-sam-cli/releases/download/${SAM_VERSION}/aws-sam-cli-linux-${SAMCLIARCH}.zip && \
+    unzip aws-sam-cli-linux-${SAMCLIARCH}.zip -d sam-installation && \
     sudo ./sam-installation/install && \
-    rm -rf aws-sam-cli-linux-${BUILDARCH}.zip sam-installation && \
+    rm -rf aws-sam-cli-linux-${SAMCLIARCH}.zip sam-installation && \
     sam --version
 
 ### act
@@ -98,10 +94,11 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/nekto
 mv bin/act /usr/local/bin/act && \
 act --version
 
-#rootlessコンテナ toshikazuでの実行
-RUN /usr/sbin/useradd devuser && \
+#rootlessコンテナ devuserでの実行
+RUN /usr/sbin/groupadd -r devgroup && \
+    /usr/sbin/useradd -r -g devgroup -m devuser && \
     mkdir /work && \
-    chown devuser:devuser /work && \
+    chown devuser:devgroup /work && \
     echo "devuser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 USER devuser
 VOLUME /work

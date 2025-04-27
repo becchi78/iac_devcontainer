@@ -40,3 +40,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            BUILDARCH=arm64
+            AWSCLIARCH=aarch64
+            SAMCLIARCH=arm64
