@@ -68,12 +68,10 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-${AWSCLIARCH}-${AWSCLI_V
     unzip awscliv2.zip && \
     sudo ./aws/install && \
     rm awscliv2.zip && \
-    rm -rf ./aws
-
-RUN sudo curl -Lo /usr/local/bin/ecs-cli https://amazon-ecs-cli.s3.amazonaws.com/ecs-cli-linux-${BUILDARCH}-${ECSCLI_VERSION} && \
-    sudo chmod +x /usr/local/bin/ecs-cli
-
-RUN  curl -sLO "https://github.com/weaveworks/eksctl/releases/download/${EKSCTL_VERSION}/eksctl_Linux_${BUILDARCH}.tar.gz" && \
+    rm -rf ./aws && \
+    sudo curl -Lo /usr/local/bin/ecs-cli https://amazon-ecs-cli.s3.amazonaws.com/ecs-cli-linux-${BUILDARCH}-${ECSCLI_VERSION} && \
+    sudo chmod +x /usr/local/bin/ecs-cli && \
+    curl -sLO "https://github.com/weaveworks/eksctl/releases/download/${EKSCTL_VERSION}/eksctl_Linux_${BUILDARCH}.tar.gz" && \
     tar -xzf eksctl_Linux_${BUILDARCH}.tar.gz -C /tmp && \
     rm eksctl_Linux_${BUILDARCH}.tar.gz &&\
     mv /tmp/eksctl /usr/local/bin
