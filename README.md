@@ -85,12 +85,13 @@ Terraform/Ansible/Docker/Kubernetes/CloudFormation の開発を主目的とす�
 
 コマンドを実行してコンテナイメージをビルドする。
 
-### podman
+### Windows/Linux(amd64)の場合
 
 ```bash
-cd [Dockerfileがあるフォルダ]
-podman build ./ -t iac-devcontainer:v1.5
+docker build --build-arg BUILDARCH=amd64 --build-arg AWSCLIARCH=x86_64 --build-arg SAMCLIARCH=x86_64 -t iac_devcontainer:v1.5 .
 ```
+
+### Mac 場合
 
 ```bash
 docker build --build-arg BUILDARCH=arm64 --build-arg AWSCLIARCH=aarch64 --build-arg SAMCLIARCH=aarch64 -t iac_devcontainer:v1.5 .
@@ -106,9 +107,9 @@ docker build --build-arg BUILDARCH=arm64 --build-arg AWSCLIARCH=aarch64 --build-
 Volume を作成してからコンテナを作成する。
 
 ```bash
-podman volume create iac-devcontainer-volume
+docker volume create iac-devcontainer-volume
 
-podman create --name iac-devcontainer -v iac-devcontainer-volume:/work -v /run/podman/podman.sock:/var/run/docker.sock docker.sock iac-devcontainer:v1.5
+docker create --name iac-devcontainer -v iac-devcontainer-volume:/work -v /run/podman/podman.sock:/var/run/docker.sock docker.sock iac-devcontainer:v1.5
 ```
 
 GUI からコンテナを起動させる。

@@ -66,7 +66,7 @@ RUN yum-config-manager --add-repo https://download.docker.com/linux/centos/docke
 ### AWS
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-${AWSCLIARCH}-${AWSCLI_VERSION}.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
-    sudo ./aws/install && \
+    ./aws/install && \
     rm awscliv2.zip && \
     rm -rf ./aws
 
