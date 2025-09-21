@@ -23,8 +23,8 @@ ENV TERRAFORM_VERSION=1.7.4 \
     #https://github.com/eksctl-io/eksctl
     PYTHON_VERSION=3.12 \
     #Python version for uv
-    NODE_VERSION=22 \
-    #for Claude Code CLI
+    NODE_VERSION=v22.11.0 \
+    #for Claude Code CLI (https://nodejs.org/dist/)
     UV_VERSION=0.8.19 \
     #https://github.com/astral-sh/uv
     RUFF_VERSION=0.8.4
@@ -87,22 +87,16 @@ RUN uv pip install --system \
     pydantic \
     python-dotenv
 
-### Node.js 22 and Claude Code CLI
-# Node.jsリポジトリを手動で設定（sudoを使わない）
-RUN SYS_ARCH=$(uname -m) && \
-    echo "[nodesource-nodejs]" > /etc/yum.repos.d/nodesource-nodejs.repo && \
-    echo "name=Node.js Packages for Linux RPM based distros - $SYS_ARCH" >> /etc/yum.repos.d/nodesource-nodejs.repo && \
-    echo "baseurl=https://rpm.nodesource.com/pub_${NODE_VERSION}.x/nodistro/nodejs/$SYS_ARCH" >> /etc/yum.repos.d/nodesource-nodejs.repo && \
-    echo "priority=9" >> /etc/yum.repos.d/nodesource-nodejs.repo && \
-    echo "enabled=1" >> /etc/yum.repos.d/nodesource-nodejs.repo && \
-    echo "gpgcheck=1" >> /etc/yum.repos.d/nodesource-nodejs.repo && \
-    echo "gpgkey=https://rpm.nodesource.com/gpgkey/ns-operations-public.key" >> /etc/yum.repos.d/nodesource-nodejs.repo && \
-    echo "module_hotfixes=1" >> /etc/yum.repos.d/nodesource-nodejs.repo && \
-    microdnf makecache --disablerepo="*" --enablerepo="nodesource-nodejs" && \
-    microdnf install -y nodejs && \
+### Node.js and Claude Code CLI - Binary installation
+# Node.jsを公式バイナリから直接インストール
+RUN ARCH=$(uname -m | sed 's/x86_64/x64/;s/aarch64/arm64/') && \
+    curl -fsSL "https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-linux-${ARCH}.tar.xz" -o node.tar.xz && \
+    tar -xJf node.tar.xz -C /usr/local --strip-components=1 && \
+    rm node.tar.xz && \
+    node --version && \
+    npm --version && \
     npm install -g @anthropic-ai/claude-code && \
-    claude-code --version && \
-    microdnf clean all
+    claude-code --version
 
 ### Terraform
 RUN curl -OL https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_${BUILDARCH}.zip && \
