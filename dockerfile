@@ -88,7 +88,17 @@ RUN uv pip install --system \
     python-dotenv
 
 ### Node.js 22 and Claude Code CLI
-RUN curl -fsSL https://rpm.nodesource.com/setup_${NODE_VERSION}.x | sudo bash - && \
+# Node.jsリポジトリを手動で設定（sudoを使わない）
+RUN SYS_ARCH=$(uname -m) && \
+    echo "[nodesource-nodejs]" > /etc/yum.repos.d/nodesource-nodejs.repo && \
+    echo "name=Node.js Packages for Linux RPM based distros - $SYS_ARCH" >> /etc/yum.repos.d/nodesource-nodejs.repo && \
+    echo "baseurl=https://rpm.nodesource.com/pub_${NODE_VERSION}.x/nodistro/nodejs/$SYS_ARCH" >> /etc/yum.repos.d/nodesource-nodejs.repo && \
+    echo "priority=9" >> /etc/yum.repos.d/nodesource-nodejs.repo && \
+    echo "enabled=1" >> /etc/yum.repos.d/nodesource-nodejs.repo && \
+    echo "gpgcheck=1" >> /etc/yum.repos.d/nodesource-nodejs.repo && \
+    echo "gpgkey=https://rpm.nodesource.com/gpgkey/ns-operations-public.key" >> /etc/yum.repos.d/nodesource-nodejs.repo && \
+    echo "module_hotfixes=1" >> /etc/yum.repos.d/nodesource-nodejs.repo && \
+    microdnf makecache --disablerepo="*" --enablerepo="nodesource-nodejs" && \
     microdnf install -y nodejs && \
     npm install -g @anthropic-ai/claude-code && \
     claude-code --version && \
