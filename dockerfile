@@ -89,8 +89,14 @@ RUN uv pip install --system \
 
 ### Node.js and Claude Code CLI - Binary installation
 # Node.jsを公式バイナリから直接インストール
-RUN ARCH=$(uname -m | sed 's/x86_64/x64/;s/aarch64/arm64/') && \
-    curl -fsSL "https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-linux-${ARCH}.tar.xz" -o node.tar.xz && \
+RUN if [ "${BUILDARCH}" = "amd64" ]; then \
+        NODE_ARCH="x64"; \
+    elif [ "${BUILDARCH}" = "arm64" ]; then \
+        NODE_ARCH="arm64"; \
+    else \
+        echo "Unsupported architecture: ${BUILDARCH}" && exit 1; \
+    fi && \
+    curl -fsSL "https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-linux-${NODE_ARCH}.tar.xz" -o node.tar.xz && \
     tar -xJf node.tar.xz -C /usr/local --strip-components=1 && \
     rm node.tar.xz && \
     node --version && \
