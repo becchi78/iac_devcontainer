@@ -101,10 +101,7 @@ RUN if [ "${BUILDARCH}" = "amd64" ]; then \
     rm node.tar.gz && \
     node --version && \
     npm --version && \
-    npm install -g @anthropic-ai/claude-code && \
-    # npmのグローバルbinディレクトリを確認してPATHに追加
-    export PATH="$PATH:$(npm config get prefix)/bin" && \
-    claude-code --version
+    npm install -g @anthropic-ai/claude-code
 
 # 環境変数として永続化
 ENV PATH="$PATH:/usr/local/bin"
