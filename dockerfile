@@ -155,7 +155,7 @@ RUN uv pip install --system cfn-lint pyyaml && \
 ### SAM CLI
 RUN wget https://github.com/aws/aws-sam-cli/releases/download/${SAM_VERSION}/aws-sam-cli-linux-${SAMCLIARCH}.zip && \
     unzip -q aws-sam-cli-linux-${SAMCLIARCH}.zip -d sam-installation && \
-    sudo ./sam-installation/install > /dev/null && \
+    ./sam-installation/install > /dev/null && \
     rm -rf aws-sam-cli-linux-${SAMCLIARCH}.zip sam-installation && \
     sam --version
 
