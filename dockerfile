@@ -108,7 +108,7 @@ ENV PATH="$PATH:/usr/local/bin"
 
 ### Terraform
 RUN curl -OL https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_${BUILDARCH}.zip && \
-    unzip terraform_${TERRAFORM_VERSION}_linux_${BUILDARCH}.zip -d /usr/local/bin && \
+    unzip -q terraform_${TERRAFORM_VERSION}_linux_${BUILDARCH}.zip -d /usr/local/bin && \
     rm terraform_${TERRAFORM_VERSION}_linux_${BUILDARCH}.zip && \
     curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash && \
     tflint --version
@@ -133,7 +133,7 @@ RUN yum-config-manager --add-repo https://download.docker.com/linux/centos/docke
 
 ### AWS
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-${AWSCLIARCH}-${AWSCLI_VERSION}.zip" -o "awscliv2.zip" && \
-    unzip awscliv2.zip && \
+    unzip -q awscliv2.zip && \
     ./aws/install && \
     rm awscliv2.zip && \
     rm -rf ./aws
@@ -154,8 +154,8 @@ RUN uv pip install --system cfn-lint pyyaml && \
 
 ### SAM CLI
 RUN wget https://github.com/aws/aws-sam-cli/releases/download/${SAM_VERSION}/aws-sam-cli-linux-${SAMCLIARCH}.zip && \
-    unzip aws-sam-cli-linux-${SAMCLIARCH}.zip -d sam-installation && \
-    sudo ./sam-installation/install && \
+    unzip -q aws-sam-cli-linux-${SAMCLIARCH}.zip -d sam-installation && \
+    sudo ./sam-installation/install > /dev/null && \
     rm -rf aws-sam-cli-linux-${SAMCLIARCH}.zip sam-installation && \
     sam --version
 
