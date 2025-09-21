@@ -87,7 +87,7 @@ RUN uv pip install --system \
     pydantic \
     python-dotenv
 
-### Node.js and Claude Code CLI - Binary installation
+### Node.js and Claude Code CLI - Binary installation with PATH fix
 # Node.jsを公式バイナリから直接インストール
 RUN if [ "${BUILDARCH}" = "amd64" ]; then \
         NODE_ARCH="x64"; \
@@ -102,7 +102,12 @@ RUN if [ "${BUILDARCH}" = "amd64" ]; then \
     node --version && \
     npm --version && \
     npm install -g @anthropic-ai/claude-code && \
+    # npmのグローバルbinディレクトリを確認してPATHに追加
+    export PATH="$PATH:$(npm config get prefix)/bin" && \
     claude-code --version
+
+# 環境変数として永続化
+ENV PATH="$PATH:/usr/local/bin"
 
 ### Terraform
 RUN curl -OL https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_${BUILDARCH}.zip && \
