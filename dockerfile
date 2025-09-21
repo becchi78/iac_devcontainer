@@ -96,9 +96,9 @@ RUN if [ "${BUILDARCH}" = "amd64" ]; then \
     else \
         echo "Unsupported architecture: ${BUILDARCH}" && exit 1; \
     fi && \
-    curl -fsSL "https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-linux-${NODE_ARCH}.tar.xz" -o node.tar.xz && \
-    tar -xJf node.tar.xz -C /usr/local --strip-components=1 && \
-    rm node.tar.xz && \
+    curl -fsSL "https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-linux-${NODE_ARCH}.tar.gz" -o node.tar.gz && \
+    tar -xzf node.tar.gz -C /usr/local --strip-components=1 && \
+    rm node.tar.gz && \
     node --version && \
     npm --version && \
     npm install -g @anthropic-ai/claude-code && \
