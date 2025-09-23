@@ -232,7 +232,8 @@ git push origin v1.6
 
 ## 更新履歴
 
-- v1.6 2025/09/23 Python 3.12 移行、uv/Ruff 導入、Node.js 22 追加、Claude Code CLI 追加、マルチアーキテクチャ対応
+- v1.7 2025/09/24 devuser の uid/gid を固定
+- v1.6 2025/09/22 Python 3.12 移行、uv/Ruff 導入、Node.js 22 追加、Claude Code CLI 追加、マルチアーキテクチャ対応
 - v1.5 2025/04/13 リファクタリング
 - v1.4 2025/03/14 act-cli を追加
 - v1.3 2025/03/02 vi と diff を追加

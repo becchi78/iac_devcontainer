@@ -175,8 +175,8 @@ COPY config/mypy.ini /etc/mypy.ini
 COPY config/pytest.ini /etc/pytest.ini
 
 ### rootlessコンテナ devuserでの実行
-RUN /usr/sbin/groupadd -r devgroup && \
-    /usr/sbin/useradd -r -g devgroup -m devuser && \
+RUN /usr/sbin/groupadd -g 1000 devgroup && \
+    /usr/sbin/useradd -u 1000 -g 1000 -m devuser && \
     mkdir /work && \
     chown devuser:devgroup /work && \
     echo "devuser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
@@ -184,13 +184,9 @@ RUN /usr/sbin/groupadd -r devgroup && \
 # Setup Python and development tools for devuser
 USER devuser
 
-# Configure environment and tools for devuser
-RUN echo 'export PATH="/home/devuser/.local/bin:$PATH"' >> /home/devuser/.bashrc && \
-    echo 'alias ll="ls -la"' >> /home/devuser/.bashrc && \
+# Configure basic aliases for devuser
+RUN echo 'alias ll="ls -la"' >> /home/devuser/.bashrc && \
     echo 'alias python="python3"' >> /home/devuser/.bashrc && \
-    # Configure git
-    git config --global init.defaultBranch main && \
-    git config --global color.ui auto && \
     # Create config directories and link system configs
     mkdir -p /home/devuser/.config/ruff && \
     mkdir -p /home/devuser/.config/mypy && \
