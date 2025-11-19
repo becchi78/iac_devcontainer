@@ -175,6 +175,16 @@ VSCode の拡張機能「Dev Container」を導入する。
 docker exec -it iac-devcontainer /bin/bash
 ```
 
+### 初回接続時の設定
+
+コンテナに初回接続した際に、以下のコマンドを実行して Docker コマンドを sudo なしで実行できるようにします。
+
+```bash
+sudo chown root:docker /var/run/docker.sock
+```
+
+このコマンドにより、devuser が docker グループ経由で Docker デーモンにアクセスできるようになります。
+
 ## Python 開発環境の使い方
 
 ### パッケージ管理（uv）
@@ -220,7 +230,7 @@ claude "Help me implement this function..."
 claude mcp add context7 -- npx -y @upstash/context7-mcp
 
 # Serena（AI アシスタント）
-claude mcp add serena -- uv run --from git+https://github.com/oraios/serena serena-mcp-server --port 32123
+claude mcp add serena -- uvx --from git+https://github.com/oraios/serena serena-mcp-server --context ide-assistant
 
 # AWS Knowledge（AWS ナレッジベース）
 claude mcp add -t http aws-knowledge https://knowledge-mcp.global.api.aws
