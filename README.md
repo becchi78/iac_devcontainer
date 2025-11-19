@@ -56,6 +56,10 @@ Terraform/Ansible/Docker/Kubernetes/CloudFormation の開発を主目的とす�
 #### AI 開発支援
 
 - Claude Code CLI（@anthropic-ai/claude-code）
+- MCP サーバー（コンテナ起動後に手動インストール）
+  - Context7: コンテキスト管理
+  - Serena: AI アシスタント
+  - AWS Knowledge: AWS ナレッジベース
 
 #### IaC
 
@@ -200,9 +204,33 @@ pytest tests/
 
 ### AI 支援開発
 
+#### Claude Code CLI の使用
+
 ```bash
 # Claude Code を使用
-npx claude-code "Help me implement this function..."
+claude "Help me implement this function..."
+```
+
+#### MCP サーバーのインストール（初回のみ）
+
+コンテナ起動後、以下のコマンドでMCPサーバーを追加します。
+
+```bash
+# Context7（Upstash のコンテキスト管理）
+claude mcp add context7 -- npx -y @upstash/context7-mcp
+
+# Serena（AI アシスタント）
+claude mcp add serena -- uv run --from git+https://github.com/oraios/serena serena-mcp-server --port 32123
+
+# AWS Knowledge（AWS ナレッジベース）
+claude mcp add -t http aws-knowledge https://knowledge-mcp.global.api.aws
+```
+
+#### MCP サーバーの確認
+
+```bash
+# インストール済みの MCP サーバーを確認
+claude mcp list
 ```
 
 ## コンテナの更新
