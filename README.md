@@ -220,7 +220,7 @@ claude "Help me implement this function..."
 claude mcp add context7 -- npx -y @upstash/context7-mcp
 
 # Serena（AI アシスタント）
-claude mcp add serena -- uv run --from git+https://github.com/oraios/serena serena-mcp-server --port 32123
+claude mcp add serena -- uvx --from git+https://github.com/oraios/serena serena-mcp-server --context ide-assistant
 
 # AWS Knowledge（AWS ナレッジベース）
 claude mcp add -t http aws-knowledge https://knowledge-mcp.global.api.aws
