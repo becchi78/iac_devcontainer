@@ -195,6 +195,11 @@ RUN echo 'alias ll="ls -la"' >> /home/devuser/.bashrc && \
     ln -s /etc/mypy.ini /home/devuser/.config/mypy/config && \
     ln -s /etc/pytest.ini /home/devuser/.config/pytest/pytest.ini
 
+# Install MCP servers for Claude Code
+RUN claude mcp add context7 -- npx -y @upstash/context7-mcp && \
+    claude mcp add serena -- uv run --from git+https://github.com/oraios/serena serena-mcp-server --port 32123 && \
+    claude mcp add -t http aws-knowledge https://knowledge-mcp.global.api.aws
+
 VOLUME /work
 WORKDIR /work
 
