@@ -176,8 +176,7 @@ COPY config/pytest.ini /etc/pytest.ini
 
 ### rootlessコンテナ devuserでの実行
 RUN /usr/sbin/groupadd -g 1000 devgroup && \
-    /usr/sbin/groupadd -g 999 docker && \
-    /usr/sbin/useradd -u 1000 -g 1000 -G docker -m devuser && \
+    /usr/sbin/useradd -u 1000 -g 1000 -m devuser && \
     mkdir /work && \
     chown devuser:devgroup /work && \
     echo "devuser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
