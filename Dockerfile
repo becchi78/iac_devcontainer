@@ -1,34 +1,36 @@
 ### BASE
-FROM almalinux:9.6-minimal
+FROM almalinux:9.8-minimal
     #https://repo.almalinux.org/almalinux/9/isos/x86_64/
 
 ### ENV
-ENV TERRAFORM_VERSION=1.7.4 \
+ENV TERRAFORM_VERSION=1.15.5 \
     #https://releases.hashicorp.com/terraform/
-    ANSIBLE_VERSION=8.7.0 \
-    #ansible core 2.15
+    ANSIBLE_VERSION=14.0.0 \
+    #ansible core 2.21
     #https://docs.ansible.com/ansible/latest/roadmap/ansible_roadmap_index.html
-    DOCKERCLI_VERSION=1:25.0.3-1.el9 \
+    DOCKERCLI_VERSION=1:29.5.3-1.el9 \
     #https://download.docker.com/linux/centos/9/x86_64/stable/Packages/
-    KUBECTL_VERSION=v1.29.1 \
+    KUBECTL_VERSION=v1.36.1 \
     #https://dl.k8s.io/release/stable.txt
     #https://github.com/kubernetes/kubectl/tags
-    AWSCLI_VERSION=2.17.49 \
+    AWSCLI_VERSION=2.34.61 \
     #https://github.com/aws/aws-cli
-    SAM_VERSION=v1.123.0 \
+    SAM_VERSION=v1.160.0 \
     #https://github.com/aws/aws-sam-cli
-    ECSCLI_VERSION=v1.21.0 \
-    #https://github.com/aws/amazon-ecs-cli
-    EKSCTL_VERSION=v0.171.0 \
+    EKSCTL_VERSION=v0.227.0 \
     #https://github.com/eksctl-io/eksctl
     PYTHON_VERSION=3.12 \
     #Python version for uv
-    NODE_VERSION=v22.11.0 \
+    NODE_VERSION=v22.22.3 \
     #for Claude Code CLI (https://nodejs.org/dist/)
-    UV_VERSION=0.8.19 \
+    UV_VERSION=0.11.19 \
     #https://github.com/astral-sh/uv
-    RUFF_VERSION=0.8.4
+    RUFF_VERSION=0.15.15 \
     #https://github.com/astral-sh/ruff
+    CHECKOV_VERSION=3.2.532 \
+    #https://github.com/bridgecrewio/checkov
+    GH_VERSION=v2.92.0
+    #https://github.com/cli/cli
 
 ### ARG
 ARG BUILDARCH
@@ -37,7 +39,7 @@ ARG SAMCLIARCH
 
 ### tools (gcc等のビルドツールを除外)
 RUN microdnf update -y && \
-    microdnf install -y epel-release yum-utils wget sudo which tar zip unzip gzip bind-utils iputils git jq tree vi diffutils glibc-locale-source && \
+    microdnf install -y epel-release yum-utils curl wget sudo which tar zip unzip gzip bind-utils iputils git jq tree vi diffutils findutils glibc-locale-source && \
     microdnf clean all && \
     rm -rf /var/cache/yum/* && \
     rm -rf /tmp/*
@@ -138,16 +140,13 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-${AWSCLIARCH}-${AWSCLI_V
     rm awscliv2.zip && \
     rm -rf ./aws
 
-RUN curl -Lo /usr/local/bin/ecs-cli https://amazon-ecs-cli.s3.amazonaws.com/ecs-cli-linux-${BUILDARCH}-${ECSCLI_VERSION} && \
-    chmod +x /usr/local/bin/ecs-cli
-
 RUN curl -sLO "https://github.com/weaveworks/eksctl/releases/download/${EKSCTL_VERSION}/eksctl_Linux_${BUILDARCH}.tar.gz" && \
     tar -xzf eksctl_Linux_${BUILDARCH}.tar.gz -C /tmp && \
     rm eksctl_Linux_${BUILDARCH}.tar.gz &&\
     mv /tmp/eksctl /usr/local/bin
 
 ### Cloudformation tools - Install using uv
-RUN uv pip install --system cfn-lint pyyaml && \
+RUN uv pip install --system cfn-lint pyyaml checkov==${CHECKOV_VERSION} && \
     curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/aws-cloudformation/cloudformation-guard/main/install-guard.sh | sh && \
     cp /root/.guard/3/cfn-guard-v3-*-ubuntu-latest/cfn-guard /usr/local/bin/cfn-guard && \
     cfn-guard --version
@@ -163,6 +162,13 @@ RUN wget https://github.com/aws/aws-sam-cli/releases/download/${SAM_VERSION}/aws
 RUN curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/nektos/act/master/install.sh | bash && \
     mv bin/act /usr/local/bin/act && \
     act --version
+
+### GitHub CLI (gh)
+RUN curl -Lo /tmp/gh.tar.gz "https://github.com/cli/cli/releases/download/${GH_VERSION}/gh_${GH_VERSION#v}_linux_${BUILDARCH}.tar.gz" && \
+    tar -xzf /tmp/gh.tar.gz -C /tmp && \
+    mv /tmp/gh_${GH_VERSION#v}_linux_${BUILDARCH}/bin/gh /usr/local/bin/gh && \
+    rm -rf /tmp/gh.tar.gz /tmp/gh_*/ && \
+    gh --version
 
 ### yq (YAML processor)
 RUN wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${BUILDARCH} && \

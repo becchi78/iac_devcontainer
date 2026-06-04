@@ -6,14 +6,23 @@ on:
     tags:
       - "v*"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
 env:
   REGISTRY_IMAGE: becchi78/iac_devcontainer
 
 jobs:
   build:
     name: Build Docker image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
     strategy:
+      fail-fast: false
       matrix:
         platform:
           - linux/amd64
@@ -46,6 +55,7 @@ jobs:
           images: ${{ env.REGISTRY_IMAGE }}
           tags: |
             type=ref,event=tag
+            type=raw,value=latest
           labels: |
             org.opencontainers.image.title=infrastructure_devcontainer
             org.opencontainers.image.vendor=becchi78
@@ -66,7 +76,7 @@ jobs:
 
       - name: Build and push by digest
         id: build
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
@@ -96,7 +106,8 @@ jobs:
 
   merge:
     name: Merge and push manifest
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
     needs:
       - build
     steps:
@@ -117,6 +128,7 @@ jobs:
           images: ${{ env.REGISTRY_IMAGE }}
           tags: |
             type=ref,event=tag
+            type=raw,value=latest
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
