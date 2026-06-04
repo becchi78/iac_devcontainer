@@ -105,7 +105,8 @@ RUN if [ "${BUILDARCH}" = "amd64" ]; then \
     npm install -g @anthropic-ai/claude-code
 
 # 環境変数として永続化
-ENV PATH="$PATH:/usr/local/bin"
+ENV PATH="$PATH:/usr/local/bin" \
+    UV_PYTHON=/usr/local/bin/python3.12
 
 ### Terraform
 RUN curl -OL https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_${BUILDARCH}.zip && \
