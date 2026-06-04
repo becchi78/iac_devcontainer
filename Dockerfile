@@ -56,6 +56,9 @@ RUN curl -LsSf https://astral.sh/uv/${UV_VERSION}/install.sh | sh && \
     uv venv /opt/pyenv --python 3.12 && \
     /opt/pyenv/bin/python --version
 
+ENV PATH="/opt/pyenv/bin:/usr/local/bin:$PATH" \
+    VIRTUAL_ENV=/opt/pyenv
+
 ### Python Development Environment Setup
 # Install Ruff (Python linter and formatter)
 RUN uv tool install ruff==${RUFF_VERSION} && \
@@ -98,10 +101,6 @@ RUN if [ "${BUILDARCH}" = "amd64" ]; then \
     node --version && \
     npm --version && \
     npm install -g @anthropic-ai/claude-code
-
-# 環境変数として永続化
-ENV PATH="/opt/pyenv/bin:/usr/local/bin:$PATH" \
-    VIRTUAL_ENV=/opt/pyenv
 
 ### Terraform
 RUN curl -OL https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_${BUILDARCH}.zip && \
