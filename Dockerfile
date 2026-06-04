@@ -52,14 +52,9 @@ RUN curl -LsSf https://astral.sh/uv/${UV_VERSION}/install.sh | sh && \
     mv /root/.local/bin/uv /usr/local/bin/uv && \
     mv /root/.local/bin/uvx /usr/local/bin/uvx && \
     uv --version && \
-    # Install Python 3.12 using uv
-    uv python install 3.12 && \
-    uv python pin 3.12 && \
-    # Create symlinks for system-wide access
-    ln -sf /root/.local/share/uv/python/cpython-3.12.*/bin/python3.12 /usr/local/bin/python3.12 && \
-    ln -sf /usr/local/bin/python3.12 /usr/local/bin/python3 && \
-    ln -sf /usr/local/bin/python3.12 /usr/local/bin/python && \
-    python --version
+    # Create global virtual environment with Python 3.12
+    uv venv /opt/pyenv --python 3.12 && \
+    /opt/pyenv/bin/python --version
 
 ### Python Development Environment Setup
 # Install Ruff (Python linter and formatter)
@@ -68,7 +63,7 @@ RUN uv tool install ruff==${RUFF_VERSION} && \
     ruff --version
 
 # Install Python development tools using uv
-RUN uv pip install --system \
+RUN uv pip install \
     mypy \
     pytest \
     pytest-cov \
@@ -105,8 +100,8 @@ RUN if [ "${BUILDARCH}" = "amd64" ]; then \
     npm install -g @anthropic-ai/claude-code
 
 # 環境変数として永続化
-ENV PATH="$PATH:/usr/local/bin" \
-    UV_PYTHON=/usr/local/bin/python3.12
+ENV PATH="/opt/pyenv/bin:/usr/local/bin:$PATH" \
+    VIRTUAL_ENV=/opt/pyenv
 
 ### Terraform
 RUN curl -OL https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_${BUILDARCH}.zip && \
@@ -116,7 +111,7 @@ RUN curl -OL https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terra
     tflint --version
 
 ### Ansible - Install using uv
-RUN uv pip install --system ansible==${ANSIBLE_VERSION} && \
+RUN uv pip install ansible==${ANSIBLE_VERSION} && \
     ansible --version
 
 ### Docker & Kubernetes
@@ -146,7 +141,7 @@ RUN curl -sLO "https://github.com/weaveworks/eksctl/releases/download/${EKSCTL_V
     mv /tmp/eksctl /usr/local/bin
 
 ### Cloudformation tools - Install using uv
-RUN uv pip install --system cfn-lint pyyaml checkov==${CHECKOV_VERSION} && \
+RUN uv pip install cfn-lint pyyaml checkov==${CHECKOV_VERSION} && \
     curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/aws-cloudformation/cloudformation-guard/main/install-guard.sh | sh && \
     cp /root/.guard/3/cfn-guard-v3-*-ubuntu-latest/cfn-guard /usr/local/bin/cfn-guard && \
     cfn-guard --version
@@ -185,6 +180,7 @@ RUN /usr/sbin/groupadd -g 1000 devgroup && \
     /usr/sbin/useradd -u 1000 -g 1000 -m devuser && \
     mkdir /work && \
     chown devuser:devgroup /work && \
+    chown -R devuser:devgroup /opt/pyenv && \
     echo "devuser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 # Setup Python and development tools for devuser
