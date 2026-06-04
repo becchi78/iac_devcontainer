@@ -39,7 +39,7 @@ ARG SAMCLIARCH
 
 ### tools (gcc等のビルドツールを除外)
 RUN microdnf update -y && \
-    microdnf install -y epel-release yum-utils curl wget sudo which tar zip unzip gzip bind-utils iputils git jq tree vi diffutils findutils glibc-langpack-ja && \
+    microdnf install -y epel-release yum-utils wget sudo which tar zip bind-utils git jq tree vi diffutils glibc-langpack-ja && \
     microdnf clean all && \
     rm -rf /var/cache/yum/* && \
     rm -rf /tmp/*
