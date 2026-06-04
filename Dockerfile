@@ -39,14 +39,13 @@ ARG SAMCLIARCH
 
 ### tools (gcc等のビルドツールを除外)
 RUN microdnf update -y && \
-    microdnf install -y epel-release yum-utils curl wget sudo which tar zip unzip gzip bind-utils iputils git jq tree vi diffutils findutils glibc-locale-source && \
+    microdnf install -y epel-release yum-utils curl wget sudo which tar zip unzip gzip bind-utils iputils git jq tree vi diffutils findutils glibc-langpack-ja && \
     microdnf clean all && \
     rm -rf /var/cache/yum/* && \
     rm -rf /tmp/*
 
 ### TimeZone & LANG
-RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && \
-    localedef -f UTF-8 -i ja_JP ja_JP.UTF-8
+RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 
 ### Install uv and Python 3.12
 RUN curl -LsSf https://astral.sh/uv/${UV_VERSION}/install.sh | sh && \
