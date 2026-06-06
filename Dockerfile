@@ -195,7 +195,7 @@ RUN echo 'alias ll="ls -la"' >> /home/devuser/.bashrc && \
     mkdir -p /home/devuser/.config/pytest && \
     ln -s /etc/ruff.toml /home/devuser/.config/ruff/ruff.toml && \
     ln -s /etc/mypy.ini /home/devuser/.config/mypy/config && \
-    ln -s /etc/pytest.ini /home/devuser/.config/pytest/pytest.ini && \
+    ln -s /etc/pytest.ini /home/devuser/.config/pytest/pytest.ini
 
 
 VOLUME /work
