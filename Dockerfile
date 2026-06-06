@@ -180,7 +180,8 @@ RUN /usr/sbin/groupadd -g 1000 devgroup && \
     mkdir /work && \
     chown devuser:devgroup /work && \
     chown -R devuser:devgroup /opt/pyenv && \
-    echo "devuser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+    echo "devuser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+    usermod -aG wheel devuser
 
 # Setup Python and development tools for devuser
 USER devuser
@@ -195,7 +196,7 @@ RUN echo 'alias ll="ls -la"' >> /home/devuser/.bashrc && \
     ln -s /etc/ruff.toml /home/devuser/.config/ruff/ruff.toml && \
     ln -s /etc/mypy.ini /home/devuser/.config/mypy/config && \
     ln -s /etc/pytest.ini /home/devuser/.config/pytest/pytest.ini && \
-    usermod -aG wheel devuser
+
 
 VOLUME /work
 WORKDIR /work
