@@ -86,7 +86,7 @@ RUN uv pip install \
     pydantic \
     python-dotenv
 
-### Node.js and Claude Code CLI - Binary installation with PATH fix
+### Node.js - Binary installation
 # Node.jsを公式バイナリから直接インストール
 RUN if [ "${BUILDARCH}" = "amd64" ]; then \
         NODE_ARCH="x64"; \
@@ -99,8 +99,7 @@ RUN if [ "${BUILDARCH}" = "amd64" ]; then \
     tar -xzf node.tar.gz -C /usr/local --strip-components=1 && \
     rm node.tar.gz && \
     node --version && \
-    npm --version && \
-    npm install -g @anthropic-ai/claude-code
+    npm --version
 
 ### Terraform
 RUN curl -OL https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_${BUILDARCH}.zip && \
@@ -196,6 +195,12 @@ RUN echo 'alias ll="ls -la"' >> /home/devuser/.bashrc && \
     ln -s /etc/ruff.toml /home/devuser/.config/ruff/ruff.toml && \
     ln -s /etc/mypy.ini /home/devuser/.config/mypy/config && \
     ln -s /etc/pytest.ini /home/devuser/.config/pytest/pytest.ini
+
+### Claude Code CLI - devuserとして書き込み可能なnpm prefixでインストール（自動更新を有効化）
+RUN npm config set prefix ~/.npm-global && \
+    npm install -g @anthropic-ai/claude-code && \
+    echo 'export PATH="$HOME/.npm-global/bin:$PATH"' >> /home/devuser/.bashrc
+ENV PATH="/home/devuser/.npm-global/bin:${PATH}"
 
 
 VOLUME /work
